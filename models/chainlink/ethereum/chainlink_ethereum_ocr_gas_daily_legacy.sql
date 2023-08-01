@@ -1,0 +1,5 @@
+{{ config( 
+  alias = alias('ocr_gas_daily', legacy_model=True),
+  tags = ['legacy']
+  )
+}}
