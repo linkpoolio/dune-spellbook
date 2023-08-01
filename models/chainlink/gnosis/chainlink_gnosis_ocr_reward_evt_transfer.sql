@@ -10,8 +10,6 @@
   )
 }}
 
-{% set incremental_interval = '7' %}
-
 SELECT
   'gnosis' as blockchain,
   to as admin_address,
@@ -24,9 +22,6 @@ FROM
   LEFT JOIN {{ ref('chainlink_gnosis_ocr_operator_admin_meta') }} ocr_operator_admin_meta ON ocr_operator_admin_meta.admin_address = reward_evt_transfer.to
 WHERE
   reward_evt_transfer."from" IN (ocr_reward_transmission_logs.contract_address)
-  {% if is_incremental() %}
-    AND block_time >= date_trunc('day', now() - interval '{{incremental_interval}}' day)
-  {% endif %}      
 GROUP BY
   evt_tx_hash,
   evt_index,

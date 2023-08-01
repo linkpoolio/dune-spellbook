@@ -2,7 +2,11 @@
   config(
     tags=['dunesql'],
     alias=alias('ocr_reward_evt_transfer_daily'),
-    materialized='view',
+    partition_by=['date_month'],
+    materialized='incremental',
+    file_format='delta',
+    incremental_strategy='merge',
+    unique_key=['date_start', 'admin_address'],
     post_hook='{{ expose_spells(\'["ethereum"]\',
                                 "project",
                                 "chainlink",

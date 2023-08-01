@@ -10,8 +10,6 @@
   )
 }}
 
-{% set incremental_interval = '7' %}
-
 SELECT
   'fantom' as blockchain,
   block_hash,
@@ -30,6 +28,3 @@ FROM
   {{ source('fantom', 'logs') }} logs
 WHERE
   topic0 = 0xd0d9486a2c673e2a4b57fc82e4c8a556b3e2b82dd5db07e2c04a920ca0f469b6
-  {% if is_incremental() %}
-    AND block_time >= date_trunc('day', now() - interval '{{incremental_interval}}' day)
-  {% endif %}      
