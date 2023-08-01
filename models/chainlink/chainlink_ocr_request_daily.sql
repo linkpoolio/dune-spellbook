@@ -10,14 +10,14 @@
 }}
 
 {% set models = [
- 'chainlink_arbitrum_ocr_request_daily',
- 'chainlink_avalanche_c_ocr_request_daily',
- 'chainlink_bnb_ocr_request_daily',
- 'chainlink_ethereum_ocr_request_daily',
- 'chainlink_fantom_ocr_request_daily',
- 'chainlink_gnosis_ocr_request_daily',
- 'chainlink_optimism_ocr_request_daily',
- 'chainlink_polygon_ocr_request_daily'
+  'chainlink_arbitrum_ocr_request_daily',
+  'chainlink_avalanche_c_ocr_request_daily',
+  'chainlink_bnb_ocr_request_daily',
+  'chainlink_ethereum_ocr_request_daily',
+  'chainlink_fantom_ocr_request_daily',
+  'chainlink_gnosis_ocr_request_daily',
+  'chainlink_optimism_ocr_request_daily',
+  'chainlink_polygon_ocr_request_daily'
 ] %}
 
 SELECT *

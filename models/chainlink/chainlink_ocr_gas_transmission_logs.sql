@@ -10,18 +10,14 @@
 }}
 
 {% set models = [
- 'chainlink_arbitrum_ocr_gas_transmission_logs',
- 'chainlink_avalanche_c_ocr_gas_transmission_logs',
- 'chainlink_bnb_ocr_gas_transmission_logs',
- 'chainlink_ethereum_ocr_gas_transmission_logs',
- 'chainlink_fantom_ocr_gas_transmission_logs',
- 'chainlink_gnosis_ocr_gas_transmission_logs',
- 'chainlink_optimism_ocr_gas_transmission_logs',
- 'chainlink_polygon_ocr_gas_transmission_logs'
-] %}
-
-{% set models = [
- 'chainlink_ethereum_ocr_gas_transmission_logs'
+  'chainlink_arbitrum_ocr_gas_transmission_logs',
+  'chainlink_avalanche_c_ocr_gas_transmission_logs',
+  'chainlink_bnb_ocr_gas_transmission_logs',
+  'chainlink_ethereum_ocr_gas_transmission_logs',
+  'chainlink_fantom_ocr_gas_transmission_logs',
+  'chainlink_gnosis_ocr_gas_transmission_logs',
+  'chainlink_optimism_ocr_gas_transmission_logs',
+  'chainlink_polygon_ocr_gas_transmission_logs'
 ] %}
 
 SELECT *

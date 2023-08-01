@@ -804,6 +804,10 @@ models:
 
     chainlink:
       +schema: chainlink
+      arbitrum:
+        +schema: chainlink_arbitrum
+      avalanche_c:
+        +schema: chainlink_avalanche_c
       bnb:
         +schema: chainlink_bnb
       ethereum:
