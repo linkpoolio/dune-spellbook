@@ -6,7 +6,7 @@
     materialized='incremental',
     file_format='delta',
     incremental_strategy='merge',
-    unique_key=['hash', 'index', 'from'],
+    unique_key=['tx_hash', 'tx_index', 'node_address'],
     post_hook='{{ expose_spells(\'["gnosis"]\',
                                 "project",
                                 "chainlink",
@@ -31,8 +31,10 @@ WITH
   ),
   ocr_fulfilled_transactions AS (
     SELECT
+      tx.hash as tx_hash,
+      tx.index as tx_index,
       MAX(tx.block_time) as block_time,
-      date_trunc('month', MAX(tx.block_time)) as date_month,
+      cast(date_trunc('month', MAX(tx.block_time)) as date) as date_month,
       tx."from" as "node_address",
       MAX((cast((gas_used) as double) / 1e18) * gas_price) as token_amount,
       MAX(gnosis_usd.usd_amount) as usd_amount
@@ -50,10 +52,12 @@ WITH
   )
 SELECT
  'gnosis' as blockchain,
- block_time,
- date_month
- node_address,
- token_amount,
- usd_amount
+  block_time,
+  date_month,
+  node_address,
+  token_amount,
+  usd_amount,
+  tx_hash,
+  tx_index
 FROM
   ocr_fulfilled_transactions

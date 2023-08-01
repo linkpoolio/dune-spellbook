@@ -51,7 +51,7 @@ WITH
     SELECT
       'arbitrum' as blockchain,
       date_start,
-      date_trunc('month', MAX(date_start)) as date_month,
+      cast(date_trunc('month', date_start) as date) as date_month,
       ocr_gas_daily_meta.node_address as node_address,
       operator_name,
       fulfilled_token_amount,

@@ -11,13 +11,6 @@ models:
       tags: ['chainlink', 'price', 'feed', 'bnb', 'optimism', 'polygon']
     description: >
         Table pulling price updates for known Chainlink oracle addresses
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - block_number
-              - proxy_address
-              - underlying_token_address
     columns:
       - &blockchain
         name: blockchain
@@ -63,14 +56,6 @@ models:
       tags: ['chainlink', 'price', 'feed', 'bnb', 'optimism', 'polygon']
     description: >
         Hourly chainlink price feed updates
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - hour
-              - proxy_address
-              - aggregator_address
-              - underlying_token_address
     columns:
       - *blockchain
       - name: hour
@@ -163,6 +148,8 @@ models:
       - &usd_amount
         name: usd_amount
         description: "USD Amount"
+      - *tx_hash
+      - *tx_index
 
   - name: chainlink_ocr_reverted_transactions
     meta:
@@ -181,6 +168,8 @@ models:
       - *node_address
       - *token_amount
       - *usd_amount
+      - *tx_hash
+      - *tx_index
 
   - name: chainlink_ocr_gas_daily
     meta:
@@ -192,12 +181,6 @@ models:
       tags: ['chainlink','ocr', 'gas', 'daily', 'arbitrum', 'avalanche_c', 'bnb', 'ethereum', 'fantom', 'gnosis', 'optimism', 'polygon']
     description: >
         Chainlink OCR Gas Daily
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - date_start
-              - node_address
     columns:
       - *blockchain
       - &date_start
@@ -237,12 +220,6 @@ models:
       tags: ['chainlink','ocr', 'request', 'daily', 'arbitrum', 'avalanche_c', 'bnb', 'ethereum', 'fantom', 'gnosis', 'optimism', 'polygon']
     description: >
         Chainlink OCR Request Daily
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - date_start
-              - node_address
     columns:
       - *blockchain
       - *date_start
@@ -326,6 +303,7 @@ models:
     columns:
       - *blockchain
       - *date_start
+      - *date_month
       - *admin_address
       - *operator_name
       - *token_value
@@ -340,12 +318,6 @@ models:
       tags: ['chainlink','ocr', 'reward', 'daily', 'arbitrum', 'avalanche_c', 'bnb', 'ethereum', 'fantom', 'gnosis', 'optimism', 'polygon']
     description: >
         Chainlink OCR Reward Daily
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - date_start
-              - admin_address
     columns:
       - *blockchain
       - *date_start

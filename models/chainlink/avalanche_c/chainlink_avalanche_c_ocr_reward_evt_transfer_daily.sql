@@ -19,6 +19,7 @@
 SELECT
   'avalanche_c' as blockchain,
   cast(date_trunc('day', evt_block_time) AS date) AS date_start,
+  MAX(cast(date_trunc('month', evt_block_time) AS date)) AS date_month,
   ocr_reward_evt_transfer.admin_address as admin_address,
   MAX(ocr_reward_evt_transfer.operator_name) as operator_name,
   SUM(token_value) as token_amount
@@ -29,9 +30,9 @@ FROM
   WHERE evt_block_time >= date_trunc('day', now() - interval '{{incremental_interval}}' day)
 {% endif %}      
 GROUP BY
-  2, 3
+  2, 4
 ORDER BY
-  2, 3
+  2, 4
 
 
 

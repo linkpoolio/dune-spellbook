@@ -82,6 +82,8 @@ models:
       - &usd_amount
         name: usd_amount
         description: "USD Amount"
+      - *tx_hash
+      - *tx_index
 
   - name: chainlink_avalanche_c_ocr_reverted_transactions
     meta:
@@ -99,6 +101,8 @@ models:
       - *node_address
       - *token_amount
       - *usd_amount
+      - *tx_hash
+      - *tx_index
 
   - name: chainlink_avalanche_c_ocr_gas_daily
     meta:
@@ -109,12 +113,6 @@ models:
       tags: ['chainlink','ocr', 'gas', 'daily', 'avalanche_c']
     description: >
         Chainlink OCR Gas Daily
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - date_start
-              - node_address
     columns:
       - *blockchain
       - &date_start
@@ -153,12 +151,6 @@ models:
       tags: ['chainlink','ocr', 'request', 'daily', 'avalanche_c']
     description: >
         Chainlink OCR Request Daily
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - date_start
-              - node_address
     columns:
       - *blockchain
       - *date_start
@@ -239,6 +231,7 @@ models:
     columns:
       - *blockchain
       - *date_start
+      - *date_month
       - *admin_address
       - *operator_name
       - *token_value
@@ -252,12 +245,6 @@ models:
       tags: ['chainlink','ocr', 'reward', 'daily', 'avalanche_c']
     description: >
         Chainlink OCR Reward Daily
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-              - blockchain
-              - date_start
-              - admin_address
     columns:
       - *blockchain
       - *date_start

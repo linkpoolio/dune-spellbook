@@ -83,7 +83,7 @@ WITH
   ocr_reward_daily AS (
     SELECT 
       payment_meta.date_start,
-      date_trunc('month', payment_meta.date_start) as date_month,
+      cast(date_trunc('month', payment_meta.date_start) as date) as date_month,
       payment_meta.admin_address,
       ocr_operator_admin_meta.operator_name,      
       COALESCE(ocr_reward_evt_transfer_daily.token_amount / EXTRACT(DAY FROM next_payment_date - prev_payment_date), 0) as token_amount,
@@ -108,4 +108,4 @@ SELECT
 FROM 
   ocr_reward_daily
 ORDER BY
-  2, 3
+  2, 4

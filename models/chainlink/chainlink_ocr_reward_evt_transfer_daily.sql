@@ -26,6 +26,7 @@ FROM (
     SELECT
       blockchain,
       date_start,
+      date_month,
       admin_address,
       operator_name,
       token_amount       
