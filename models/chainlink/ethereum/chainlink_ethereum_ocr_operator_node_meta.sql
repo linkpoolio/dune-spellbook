@@ -21,6 +21,7 @@
 {% set chainlayer = 'Chainlayer' %}
 {% set chainlink = 'Chainlink' %}
 {% set chorusone = 'Chorus One' %}
+{% set coinbase = 'Coinbase' %}
 {% set cosmostation = 'Cosmostation' %}
 {% set cryptomanufaktur = 'CryptoManufaktur' %}
 {% set dmakers = 'dMakers' %}
@@ -90,6 +91,7 @@ SELECT node_address, operator_name FROM (VALUES
   ('0x18c930d5EA5e33A4b633Cf52d5e83278a6080347', '{{chainlayer}}'),
   ('0x6B056837e1968e495d05d7CC0114E9693d2C9002', '{{chainlink}}'),
   ('0x64c735D72EAB90C04da523B6b9895773ACb60F5D', '{{chorusone}}'),
+  ('0xd461DCb175C22b31250f2D21d8034710853547Cb', '{{coinbase}}'),
   ('0x70bC61658615725A82D5e78FF0066BFCb1b98988', '{{cosmostation}}'),
   ('0x9741569DEDB1E0cB204f2dF7f43f7a52bB49ba3A', '{{cryptomanufaktur}}'),
   ('0xCe859E48f6cE9834a119Ba04FdC53c1D4F1082A7', '{{dmakers}}'),
