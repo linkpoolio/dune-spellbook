@@ -6,11 +6,11 @@
     materialized='incremental',
     file_format='delta',
     incremental_strategy='merge',
-    unique_key=['blockchain', 'hour', 'proxy_address', 'underlying_token_address'],
+    unique_key=['blockchain', 'hour', 'proxy_address', 'base', 'quote'],
     post_hook='{{ expose_spells(\'["bnb"]\',
                                 "project",
                                 "chainlink",
-                                \'["msilb7","0xroll","linkpool_ryan"]\') }}'
+                                \'["msilb7","0xroll","linkpool_ryan","linkpool_jon"]\') }}'
   )
 }}
 
@@ -42,7 +42,8 @@ WITH
         oracle_addresses.feed_name,
         oracle_addresses.proxy_address,
         oracle_addresses.aggregator_address,
-        token_mapping.underlying_token_address
+        oracle_addresses.base,
+        oracle_addresses.quote
     FROM (
         SELECT
           hourly_sequence_meta.hour as hr,
@@ -51,9 +52,7 @@ WITH
           aggregator_address
         FROM {{ ref('chainlink_bnb_price_feeds_oracle_addresses') }}
         CROSS JOIN hourly_sequence_meta
-    ) oracle_addresses 
-    LEFT JOIN {{ ref('chainlink_bnb_price_feeds_oracle_token_mapping') }} token_mapping 
-    ON token_mapping.proxy_address = oracle_addresses.proxy_address
+    ) oracle_addresses
   )
 SELECT 
     'bnb' AS blockchain,
@@ -63,7 +62,8 @@ SELECT
     feed_name,
     proxy_address,
     aggregator_address,
-    underlying_token_address,
+    base,
+    quote,
     oracle_price_avg,
     underlying_token_price_avg
 FROM (
@@ -72,13 +72,14 @@ FROM (
         feed_name,
         proxy_address,
         aggregator_address,
-        underlying_token_address,
+        base,
+        quote,
         FIRST_VALUE(oracle_price_avg) 
             OVER (
                 PARTITION BY feed_name, 
                              proxy_address,
                              aggregator_address,
-                             underlying_token_address,
+                             base,
                              grp 
                 ORDER BY hr
             ) AS oracle_price_avg,
@@ -87,7 +88,7 @@ FROM (
                 PARTITION BY feed_name,
                              proxy_address,
                              aggregator_address,
-                             underlying_token_address,
+                             base,
                              grp
                 ORDER BY hr
             ) AS underlying_token_price_avg
@@ -98,7 +99,7 @@ FROM (
             feed_name,
             proxy_address,
             aggregator_address,
-            underlying_token_address,
+            base,
             underlying_token_price_avg,
             oracle_price_avg,
             COUNT(oracle_price_avg) 
@@ -106,7 +107,7 @@ FROM (
                     PARTITION BY feed_name,
                                  proxy_address,
                                  aggregator_address,
-                                 underlying_token_address
+                                 base
                     ORDER BY hr
                 ) AS grp
         FROM (
@@ -121,7 +122,7 @@ FROM (
             FROM hourly_sequence 
             LEFT JOIN {{ ref('chainlink_bnb_price_feeds') }} price_feeds 
             ON hourly_sequence.hr = date_trunc('hour', price_feeds.block_time)
-            AND hourly_sequence.underlying_token_address = price_feeds.underlying_token_address
+            AND hourly_sequence.base = price_feeds.base
             AND hourly_sequence.proxy_address = price_feeds.proxy_address
             AND hourly_sequence.aggregator_address = price_feeds.aggregator_address
             WHERE

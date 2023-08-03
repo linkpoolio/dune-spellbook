@@ -27,7 +27,8 @@ FROM (
       oracle_price,
       proxy_address,
       aggregator_address,
-      underlying_token_address,
+      base,
+      quote,
       underlying_token_price
     FROM {{ ref(model) }}
     {% if not loop.last %}
