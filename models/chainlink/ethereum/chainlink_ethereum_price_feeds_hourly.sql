@@ -7,15 +7,15 @@
     file_format='delta',
     incremental_strategy='merge',
     unique_key=['blockchain', 'hour', 'proxy_address', 'aggregator_address'],
-    post_hook='{{ expose_spells(\'["bnb"]\',
+    post_hook='{{ expose_spells(\'["ethereum"]\',
                                 "project",
                                 "chainlink",
-                                \'["msilb7","0xroll","linkpool_ryan", "linkpool_jon]\') }}'
+                                \'["linkpool_ryan", "linkpool_jon]\') }}'
   )
 }}
 
 {% set incremental_interval = '7' %}
-{% set project_start_date = '2020-08-29' %}
+{% set project_start_date = '2015-07-30' %}
 
 WITH
   hourly_sequence_meta as (
@@ -48,12 +48,12 @@ WITH
           feed_name,
           proxy_address,
           aggregator_address
-        FROM {{ ref('chainlink_bnb_price_feeds_oracle_addresses') }}
+        FROM {{ ref('chainlink_ethereum_price_feeds_oracle_addresses') }}
         CROSS JOIN hourly_sequence_meta
     ) oracle_addresses
   )
 SELECT 
-    'bnb' AS blockchain,
+    'ethereum' AS blockchain,
     hour,
     cast(date_trunc('day', hour) as date) as block_date,
     cast(date_trunc('month', hour) as date) as block_month,
@@ -113,7 +113,7 @@ FROM (
                 MAX(price_feeds.quote) as quote,
                 MAX(price_feeds.base) as base
             FROM hourly_sequence 
-            LEFT JOIN {{ ref('chainlink_bnb_price_feeds') }} price_feeds 
+            LEFT JOIN {{ ref('chainlink_ethereum_price_feeds') }} price_feeds 
             ON hourly_sequence.hr = date_trunc('hour', price_feeds.block_time)
             AND hourly_sequence.proxy_address = price_feeds.proxy_address
             AND hourly_sequence.aggregator_address = price_feeds.aggregator_address

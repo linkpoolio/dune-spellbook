@@ -6,11 +6,11 @@
     materialized='incremental',
     file_format='delta',
     incremental_strategy='merge',
-    unique_key=['blockchain', 'hour', 'proxy_address', 'underlying_token_address'],
+    unique_key=['blockchain', 'hour', 'proxy_address', 'aggregator_address'],
     post_hook='{{ expose_spells(\'["optimism"]\',
                                 "project",
                                 "chainlink",
-                                \'["msilb7","0xroll","linkpool_ryan"]\') }}'
+                                \'["msilb7","0xroll","linkpool_ryan", "linkpool_jon]\') }}'
   )
 }}
 
@@ -41,8 +41,7 @@ WITH
         oracle_addresses.hr,
         oracle_addresses.feed_name,
         oracle_addresses.proxy_address,
-        oracle_addresses.aggregator_address,
-        token_mapping.underlying_token_address
+        oracle_addresses.aggregator_address
     FROM (
         SELECT
           hourly_sequence_meta.hour as hr,
@@ -51,9 +50,7 @@ WITH
           aggregator_address
         FROM {{ ref('chainlink_optimism_price_feeds_oracle_addresses') }}
         CROSS JOIN hourly_sequence_meta
-    ) oracle_addresses 
-    LEFT JOIN {{ ref('chainlink_optimism_price_feeds_oracle_token_mapping') }} token_mapping 
-    ON token_mapping.proxy_address = oracle_addresses.proxy_address
+    ) oracle_addresses
   )
 SELECT 
     'optimism' AS blockchain,
@@ -63,22 +60,21 @@ SELECT
     feed_name,
     proxy_address,
     aggregator_address,
-    underlying_token_address,
     oracle_price_avg,
-    underlying_token_price_avg
+    underlying_token_price_avg,
+    base,
+    quote
 FROM (
     SELECT
         hr AS hour,
         feed_name,
         proxy_address,
         aggregator_address,
-        underlying_token_address,
         FIRST_VALUE(oracle_price_avg) 
             OVER (
                 PARTITION BY feed_name, 
                              proxy_address,
                              aggregator_address,
-                             underlying_token_address,
                              grp 
                 ORDER BY hr
             ) AS oracle_price_avg,
@@ -87,7 +83,6 @@ FROM (
                 PARTITION BY feed_name,
                              proxy_address,
                              aggregator_address,
-                             underlying_token_address,
                              grp
                 ORDER BY hr
             ) AS underlying_token_price_avg
@@ -98,15 +93,13 @@ FROM (
             feed_name,
             proxy_address,
             aggregator_address,
-            underlying_token_address,
             underlying_token_price_avg,
             oracle_price_avg,
             COUNT(oracle_price_avg) 
                 OVER (
                     PARTITION BY feed_name,
                                  proxy_address,
-                                 aggregator_address,
-                                 underlying_token_address
+                                 aggregator_address
                     ORDER BY hr
                 ) AS grp
         FROM (
@@ -115,13 +108,13 @@ FROM (
                 hourly_sequence.feed_name,
                 hourly_sequence.proxy_address,
                 hourly_sequence.aggregator_address,
-                hourly_sequence.underlying_token_address,
                 AVG(price_feeds.oracle_price) AS oracle_price_avg,
-                AVG(price_feeds.underlying_token_price) AS underlying_token_price_avg
+                AVG(price_feeds.underlying_token_price) AS underlying_token_price_avg,
+                MAX(price_feeds.quote) as quote,
+                MAX(price_feeds.base) as base
             FROM hourly_sequence 
             LEFT JOIN {{ ref('chainlink_optimism_price_feeds') }} price_feeds 
             ON hourly_sequence.hr = date_trunc('hour', price_feeds.block_time)
-            AND hourly_sequence.underlying_token_address = price_feeds.underlying_token_address
             AND hourly_sequence.proxy_address = price_feeds.proxy_address
             AND hourly_sequence.aggregator_address = price_feeds.aggregator_address
             WHERE
@@ -131,7 +124,7 @@ FROM (
                 {% if is_incremental() %}
                   hourly_sequence.hr >= date_trunc('hour', now() - interval '{{incremental_interval}}' day)
                 {% endif %}
-            GROUP BY 
+            GROUP BY
                 1, 2, 3, 4, 5
         ) avg_prices
     ) price_groups
